@@ -223,7 +223,7 @@
   <!-- 1. SÜTUN: 3D GÖRÜNTÜLEYİCİ & HAREKET / KATMAN KONTROLLERİ -->
   <div class="card">
     <h1>3D Karakter & Katman Stüdyosu</h1>
-    <p class="sub" id="statusText">Projedeki <code>skin.png</code> otomatik yüklendi.</p>
+    <p class="sub" id="statusText">GitHub'daki skin.png yükleniyor...</p>
 
     <div id="viewer3d">
       <div class="viewer-badge">Sol Tık: Döndür | Tekerlek: Yakınlaştır</div>
@@ -233,4 +233,778 @@
       <canvas id="skinCanvas" width="64" height="64"></canvas>
       <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
         <button class="btn-download" id="downloadBtn">⬇ 64x64 Şeffaf PNG İndir</button>
-        <label style="font-size:0.72rem
+        <label style="font-size:0.72rem; color:var(--muted); text-align:center; cursor:pointer; text-decoration:underline;">
+          Farklı bir PNG test et <input type="file" id="fileInput" accept="image/png" style="display:none;">
+        </label>
+      </div>
+    </div>
+
+    <h2>Hareket & Animasyon Modu</h2>
+    <div class="btn-group" id="animGroup">
+      <button class="chip-btn active" data-anim="walk">🚶 Yürü</button>
+      <button class="chip-btn" data-anim="run">🏃 Koş</button>
+      <button class="chip-btn" data-anim="idle">🧍 Nefes Al</button>
+      <button class="chip-btn" data-anim="wave">👋 El Salla</button>
+      <button class="chip-btn" data-anim="fly">🦸 Uçuş</button>
+      <button class="chip-btn" data-anim="none">⏸ Manuel Poz</button>
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-header"><span>Animasyon Hızı</span><span id="speedVal">100%</span></div>
+      <input type="range" id="speedSlider" min="10" max="250" value="100">
+    </div>
+
+    <h2>Manuel Eklem & Katman Hareket Ettirme</h2>
+    <div class="slider-row">
+      <div class="slider-header"><span>Dış Katmanları Kabart / Ayır (Explode)</span><span id="explodeVal">0%</span></div>
+      <input type="range" id="explodeSlider" min="0" max="100" value="0">
+    </div>
+    <div class="slider-row">
+      <div class="slider-header"><span>Kafa Yönü (Sağ / Sol)</span><span id="poseHeadVal">0°</span></div>
+      <input type="range" id="poseHead" min="-75" max="75" value="0">
+    </div>
+    <div class="slider-row">
+      <div class="slider-header"><span>Kolları Hareket Ettir</span><span id="poseArmsVal">0°</span></div>
+      <input type="range" id="poseArms" min="-140" max="140" value="0">
+    </div>
+    <div class="slider-row">
+      <div class="slider-header"><span>Bacakları Hareket Ettir</span><span id="poseLegsVal">0°</span></div>
+      <input type="range" id="poseLegs" min="-80" max="80" value="0">
+    </div>
+  </div>
+
+  <!-- 2. SÜTUN: KATMAN AÇ/KAPA & DOKU AYARLARI -->
+  <div class="card">
+    <h2>Dış Katmanları (2. Katman) Aç / Kapat</h2>
+    <div class="btn-group">
+      <button class="chip-btn active" data-layer="hat">👑 Taç / Şapka</button>
+      <button class="chip-btn active" data-layer="jacket">🧥 Gövde Katmanı</button>
+      <button class="chip-btn active" data-layer="leftSleeve">💪 Sol Kol Dış</button>
+      <button class="chip-btn active" data-layer="rightSleeve">💪 Sağ Kol Dış</button>
+      <button class="chip-btn active" data-layer="leftPant">👖 Sol Bacak Dış</button>
+      <button class="chip-btn active" data-layer="rightPant">🐥 Sağ Bacak Dış</button>
+    </div>
+
+    <h2>İç Vücut Parçalarını Aç / Kapat</h2>
+    <div class="btn-group">
+      <button class="chip-btn active" data-layer="headBase">🙂 Kafa</button>
+      <button class="chip-btn active" data-layer="bodyBase">👕 Gövde</button>
+      <button class="chip-btn active" data-layer="armsBase">🙌 Kollar</button>
+      <button class="chip-btn active" data-layer="legsBase">🦵 Bacaklar</button>
+    </div>
+
+    <h2>Bölgesel Renk Seçici (4 Kanal)</h2>
+    <div class="color-row">
+      <label>👕 Üst Kıyafet (Gövde)</label>
+      <div class="color-inputs">
+        <input type="color" id="colTunic" value="#162d59">
+        <input type="text" class="hex-input" id="hexTunic" value="#162D59" maxlength="7">
+      </div>
+    </div>
+    <div class="color-row">
+      <label>👖 Pantolon (Alt)</label>
+      <div class="color-inputs">
+        <input type="color" id="colPants" value="#0f1e3d">
+        <input type="text" class="hex-input" id="hexPants" value="#0F1E3D" maxlength="7">
+      </div>
+    </div>
+    <div class="color-row">
+      <label>🧥 Kollar & Kemer</label>
+      <div class="color-inputs">
+        <input type="color" id="colSleeves" value="#2b4c7e">
+        <input type="text" class="hex-input" id="hexSleeves" value="#2B4C7E" maxlength="7">
+      </div>
+    </div>
+    <div class="color-row">
+      <label>🥾 Ayakkabı / Bot</label>
+      <div class="color-inputs">
+        <input type="color" id="colShoes" value="#091326">
+        <input type="text" class="hex-input" id="hexShoes" value="#091326" maxlength="7">
+      </div>
+    </div>
+
+    <h2>Gradient, Noise ve Ayakkabı Ayarı</h2>
+    <div class="slider-row">
+      <div class="slider-header"><span>🥾 Ayakkabı Yüksekliği (Bacak Altı)</span><span id="shoeHeightVal">3 Piksel</span></div>
+      <input type="range" id="shoeHeightSlider" min="0" max="6" value="3">
+    </div>
+    <div class="slider-row">
+      <div class="slider-header"><span>Gölge & Noise Derinliği</span><span id="contrastVal">100%</span></div>
+      <input type="range" id="contrastSlider" min="40" max="180" value="100">
+    </div>
+    <div class="slider-row">
+      <div class="slider-header"><span>Doygunluk (Saturation) Geçişi</span><span id="satKeepVal">85%</span></div>
+      <input type="range" id="satKeepSlider" min="0" max="150" value="85">
+    </div>
+
+    <div class="checks">
+      <label><input type="checkbox" id="keepHead" checked> Kafa, Saç ve Tacı Koru</label>
+      <label><input type="checkbox" id="keepChicken" checked> Pantolondaki Tavuk Figürünü Koru</label>
+      <label><input type="checkbox" id="keepCuffs" checked> Ten Rengi ve Kahve Bileklikleri Koru</label>
+    </div>
+  </div>
+
+  <!-- 3. SÜTUN: HAZIR VE ÖZEL RENK PALETLERİ -->
+  <div class="card">
+    <h2>Özel Palet Oluştur & Kaydet</h2>
+    <p class="sub">Üst, Pantolon, Kol ve Ayakkabı renklerini kaydet.</p>
+    <div class="custom-save-bar">
+      <input type="text" id="customPaletteName" placeholder="Palet adı (Örn: Lacivert Şövalye)">
+      <button id="savePaletteBtn">+ Kaydet</button>
+    </div>
+
+    <h2>Hazır Renk Paletleri (4 Kanallı)</h2>
+    <div class="palette-grid" id="presetGrid"></div>
+
+    <h2>Kaydedilen Özel Paletlerin</h2>
+    <div class="palette-grid" id="customGrid"></div>
+  </div>
+</div>
+
+<script>
+  const PRESET_PALETTES = [
+    { name: "Kraliyet Laciverti", tunic: "#162d59", pants: "#0f1e3d", sleeves: "#2b4c7e", shoes: "#091326" },
+    { name: "Gece Mavisi & Çelik", tunic: "#1e3a8a", pants: "#172554", sleeves: "#475569", shoes: "#0f172a" },
+    { name: "Okyanus Derinliği", tunic: "#0369a1", pants: "#0c4a6e", sleeves: "#38bdf8", shoes: "#082f49" },
+    { name: "Buzul Savaşçısı", tunic: "#2563eb", pants: "#1e293b", sleeves: "#7dd3fc", shoes: "#0f172a" },
+    { name: "Gölge Suikastçı", tunic: "#1f2937", pants: "#111827", sleeves: "#374151", shoes: "#030712" },
+    { name: "Altın & Obsidyen", tunic: "#18181b", pants: "#09090b", sleeves: "#ca8a04", shoes: "#422006" },
+    { name: "Hiçlik Büyücüsü", tunic: "#4c1d95", pants: "#2e1065", sleeves: "#7c3aed", shoes: "#1e1b4b" },
+    { name: "Zümrüt Korucu", tunic: "#065f46", pants: "#14532d", sleeves: "#65a30d", shoes: "#271c19" },
+    { name: "Kızıl İmparator", tunic: "#7f1d1d", pants: "#1c1917", sleeves: "#b45309", shoes: "#450a0a" },
+    { name: "Cyberpunk Neon", tunic: "#3b0764", pants: "#0f172a", sleeves: "#06b6d4", shoes: "#ec4899" },
+    { name: "Sakura Samuray", tunic: "#9d174d", pants: "#31102f", sleeves: "#f472b6", shoes: "#1f1224" },
+    { name: "Kanlı Ay", tunic: "#450a0a", pants: "#18181b", sleeves: "#991b1b", shoes: "#09090b" },
+    { name: "Bakır & Steampunk", tunic: "#7c2d12", pants: "#27272a", sleeves: "#0d9488", shoes: "#431407" },
+    { name: "Çöl Gezgini", tunic: "#92400e", pants: "#451a03", sleeves: "#d97706", shoes: "#291509" },
+    { name: "Lav Şövalyesi", tunic: "#9a3412", pants: "#1c1917", sleeves: "#ea580c", shoes: "#431407" },
+    { name: "Beyaz Tapınak", tunic: "#cbd5e1", pants: "#334155", sleeves: "#eab308", shoes: "#1e293b" }
+  ];
+
+  const skinCanvas = document.getElementById('skinCanvas');
+  const skinCtx = skinCanvas.getContext('2d', { willReadFrequently: true });
+
+  const colTunic = document.getElementById('colTunic'), hexTunic = document.getElementById('hexTunic');
+  const colPants = document.getElementById('colPants'), hexPants = document.getElementById('hexPants');
+  const colSleeves = document.getElementById('colSleeves'), hexSleeves = document.getElementById('hexSleeves');
+  const colShoes = document.getElementById('colShoes'), hexShoes = document.getElementById('hexShoes');
+
+  const shoeHeightSlider = document.getElementById('shoeHeightSlider');
+  const contrastSlider = document.getElementById('contrastSlider');
+  const satKeepSlider = document.getElementById('satKeepSlider');
+  const keepHead = document.getElementById('keepHead');
+  const keepChicken = document.getElementById('keepChicken');
+  const keepCuffs = document.getElementById('keepCuffs');
+
+  let originalImageData = null;
+  let pixelClassification = [];
+  let groupStats = {
+    tunic: { avgS: 50, avgL: 30 },
+    pants: { avgS: 30, avgL: 25 },
+    sleeves: { avgS: 30, avgL: 50 },
+    shoes: { avgS: 30, avgL: 25 }
+  };
+
+  let scene, camera, renderer, skinTexture;
+  let charGroup, headGroup, bodyGroup, rightArmGroup, leftArmGroup, rightLegGroup, leftLegGroup;
+  let meshes = {};
+  let currentAnim = 'walk';
+  let animTime = 0;
+
+  function setBoxUVs(geometry, u, v, w, h, d) {
+    const texW = 64, texH = 64;
+    const faces = [
+      [u + d + w, v + d, d, h],
+      [u, v + d, d, h],
+      [u + d, v, w, d],
+      [u + d + w, v, w, d],
+      [u + d, v + d, w, h],
+      [u + d + w + d, v + d, w, h]
+    ];
+    const uvAttr = geometry.attributes.uv;
+    for (let i = 0; i < 6; i++) {
+      let [fx, fy, fw, fh] = faces[i];
+      let u0 = fx / texW, u1 = (fx + fw) / texW;
+      let v1 = 1 - (fy / texH), v0 = 1 - ((fy + fh) / texH);
+      const idx = i * 4;
+      if (i === 2) {
+        uvAttr.setXY(idx, u0, v1); uvAttr.setXY(idx + 1, u1, v1);
+        uvAttr.setXY(idx + 2, u0, v0); uvAttr.setXY(idx + 3, u1, v0);
+      } else if (i === 3) {
+        uvAttr.setXY(idx, u0, v0); uvAttr.setXY(idx + 1, u1, v0);
+        uvAttr.setXY(idx + 2, u0, v1); uvAttr.setXY(idx + 3, u1, v1);
+      } else {
+        uvAttr.setXY(idx, u0, v1); uvAttr.setXY(idx + 1, u1, v1);
+        uvAttr.setXY(idx + 2, u0, v0); uvAttr.setXY(idx + 3, u1, v0);
+      }
+    }
+    uvAttr.needsUpdate = true;
+  }
+
+  function createPartMesh(w, h, d, u, v, expand = 0, isOverlay = false) {
+    const geom = new THREE.BoxGeometry(w + expand, h + expand, d + expand);
+    setBoxUVs(geom, u, v, w, h, d);
+    const mat = new THREE.MeshLambertMaterial({
+      map: skinTexture,
+      transparent: isOverlay,
+      alphaTest: isOverlay ? 0.05 : 0,
+      side: isOverlay ? THREE.DoubleSide : THREE.FrontSide
+    });
+    const mesh = new THREE.Mesh(geom, mat);
+    mesh.userData = { w, h, d, baseExpand: expand };
+    return mesh;
+  }
+
+  function init3DViewer() {
+    const container = document.getElementById('viewer3d');
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(42, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.set(0, 2, 42);
+
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    container.appendChild(renderer.domElement);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.78));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.45);
+    dirLight.position.set(20, 35, 30);
+    scene.add(dirLight);
+
+    skinTexture = new THREE.CanvasTexture(skinCanvas);
+    skinTexture.magFilter = THREE.NearestFilter;
+    skinTexture.minFilter = THREE.NearestFilter;
+
+    charGroup = new THREE.Group();
+    scene.add(charGroup);
+
+    headGroup = new THREE.Group();
+    headGroup.position.set(0, 8, 0);
+    meshes.headBase = createPartMesh(8, 8, 8, 0, 0, 0, false);
+    meshes.hat = createPartMesh(8, 8, 8, 32, 0, 0.6, true);
+    meshes.headBase.position.y = 4;
+    meshes.hat.position.y = 4;
+    headGroup.add(meshes.headBase, meshes.hat);
+
+    bodyGroup = new THREE.Group();
+    bodyGroup.position.set(0, 2, 0);
+    meshes.bodyBase = createPartMesh(8, 12, 4, 16, 16, 0, false);
+    meshes.jacket = createPartMesh(8, 12, 4, 16, 32, 0.5, true);
+    bodyGroup.add(meshes.bodyBase, meshes.jacket);
+
+    rightArmGroup = new THREE.Group();
+    rightArmGroup.position.set(-6, 8, 0);
+    meshes.rightArmBase = createPartMesh(4, 12, 4, 40, 16, 0, false);
+    meshes.rightSleeve = createPartMesh(4, 12, 4, 40, 32, 0.5, true);
+    meshes.rightArmBase.position.y = -6;
+    meshes.rightSleeve.position.y = -6;
+    rightArmGroup.add(meshes.rightArmBase, meshes.rightSleeve);
+
+    leftArmGroup = new THREE.Group();
+    leftArmGroup.position.set(6, 8, 0);
+    meshes.leftArmBase = createPartMesh(4, 12, 4, 32, 48, 0, false);
+    meshes.leftSleeve = createPartMesh(4, 12, 4, 48, 48, 0.5, true);
+    meshes.leftArmBase.position.y = -6;
+    meshes.leftSleeve.position.y = -6;
+    leftArmGroup.add(meshes.leftArmBase, meshes.leftSleeve);
+
+    rightLegGroup = new THREE.Group();
+    rightLegGroup.position.set(-2, -4, 0);
+    meshes.rightLegBase = createPartMesh(4, 12, 4, 0, 16, 0, false);
+    meshes.rightPant = createPartMesh(4, 12, 4, 0, 32, 0.5, true);
+    meshes.rightLegBase.position.y = -6;
+    meshes.rightPant.position.y = -6;
+    rightLegGroup.add(meshes.rightLegBase, meshes.rightPant);
+
+    leftLegGroup = new THREE.Group();
+    leftLegGroup.position.set(2, -4, 0);
+    meshes.leftLegBase = createPartMesh(4, 12, 4, 16, 48, 0, false);
+    meshes.leftPant = createPartMesh(4, 12, 4, 0, 48, 0.5, true);
+    meshes.leftLegBase.position.y = -6;
+    meshes.leftPant.position.y = -6;
+    leftLegGroup.add(meshes.leftLegBase, meshes.leftPant);
+
+    charGroup.add(headGroup, bodyGroup, rightArmGroup, leftArmGroup, rightLegGroup, leftLegGroup);
+    charGroup.rotation.y = 0.45;
+
+    let isDragging = false, prevX = 0, prevY = 0;
+    container.addEventListener('pointerdown', e => { isDragging = true; prevX = e.clientX; prevY = e.clientY; });
+    window.addEventListener('pointerup', () => isDragging = false);
+    window.addEventListener('pointermove', e => {
+      if (!isDragging) return;
+      charGroup.rotation.y += (e.clientX - prevX) * 0.012;
+      charGroup.rotation.x = Math.max(-1.2, Math.min(1.2, charGroup.rotation.x + (e.clientY - prevY) * 0.012));
+      prevX = e.clientX; prevY = e.clientY;
+    });
+    container.addEventListener('wheel', e => {
+      e.preventDefault();
+      camera.position.z = Math.max(18, Math.min(75, camera.position.z + e.deltaY * 0.03));
+    }, { passive: false });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(container.clientWidth, container.clientHeight);
+    });
+
+    animate3D();
+  }
+
+  function animate3D() {
+    requestAnimationFrame(animate3D);
+    const speed = parseFloat(document.getElementById('speedSlider').value) / 100;
+    animTime += 0.045 * speed;
+
+    if (currentAnim === 'walk') {
+      rightArmGroup.rotation.x = Math.sin(animTime) * 0.65;
+      leftArmGroup.rotation.x = -Math.sin(animTime) * 0.65;
+      rightLegGroup.rotation.x = -Math.sin(animTime) * 0.65;
+      leftLegGroup.rotation.x = Math.sin(animTime) * 0.65;
+      rightArmGroup.rotation.z = 0;
+      headGroup.rotation.y = Math.sin(animTime * 0.5) * 0.15;
+      charGroup.position.y = Math.abs(Math.cos(animTime)) * 0.4;
+    } else if (currentAnim === 'run') {
+      const t = animTime * 1.8;
+      rightArmGroup.rotation.x = Math.sin(t) * 1.2;
+      leftArmGroup.rotation.x = -Math.sin(t) * 1.2;
+      rightLegGroup.rotation.x = -Math.sin(t) * 1.2;
+      leftLegGroup.rotation.x = Math.sin(t) * 1.2;
+      rightArmGroup.rotation.z = 0;
+      charGroup.position.y = Math.abs(Math.cos(t)) * 0.8;
+    } else if (currentAnim === 'idle') {
+      rightArmGroup.rotation.x = Math.sin(animTime * 0.5) * 0.06;
+      leftArmGroup.rotation.x = -Math.sin(animTime * 0.5) * 0.06;
+      rightArmGroup.rotation.z = -0.05 - Math.cos(animTime * 0.5) * 0.04;
+      leftArmGroup.rotation.z = 0.05 + Math.cos(animTime * 0.5) * 0.04;
+      rightLegGroup.rotation.x = 0; leftLegGroup.rotation.x = 0;
+      headGroup.rotation.y = Math.sin(animTime * 0.3) * 0.2;
+      charGroup.position.y = 0;
+    } else if (currentAnim === 'wave') {
+      rightArmGroup.rotation.x = -2.6;
+      rightArmGroup.rotation.z = -0.3 + Math.sin(animTime * 2.5) * 0.35;
+      leftArmGroup.rotation.x = 0; leftArmGroup.rotation.z = 0;
+      rightLegGroup.rotation.x = 0; leftLegGroup.rotation.x = 0;
+      charGroup.position.y = 0;
+    } else if (currentAnim === 'fly') {
+      rightArmGroup.rotation.x = 0.35; leftArmGroup.rotation.x = 0.35;
+      rightArmGroup.rotation.z = -0.25; leftArmGroup.rotation.z = 0.25;
+      rightLegGroup.rotation.x = 0.25; leftLegGroup.rotation.x = 0.25;
+      charGroup.position.y = Math.sin(animTime) * 1.2;
+    }
+
+    renderer.render(scene, camera);
+  }
+
+  function rgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h = 0, s = 0, l = (max + min) / 2;
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6;
+    }
+    return [h * 360, s * 100, l * 100];
+  }
+
+  function hslToRgb(h, s, l) {
+    h = ((h % 360) + 360) % 360 / 360;
+    s = Math.max(0, Math.min(100, s)) / 100;
+    l = Math.max(0, Math.min(100, l)) / 100;
+    if (s === 0) {
+      const v = Math.round(l * 255);
+      return [v, v, v];
+    }
+    const hue2rgb = (p, q, t) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1/6) return p + (q - p) * 6 * t;
+      if (t < 1/2) return q;
+      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+      return p;
+    };
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    return [
+      Math.round(hue2rgb(p, q, h + 1/3) * 255),
+      Math.round(hue2rgb(p, q, h) * 255),
+      Math.round(hue2rgb(p, q, h - 1/3) * 255)
+    ];
+  }
+
+  function hexToHsl(hex) {
+    hex = hex.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16) || 0;
+    const g = parseInt(hex.substring(2, 4), 16) || 0;
+    const b = parseInt(hex.substring(4, 6), 16) || 0;
+    return rgbToHsl(r, g, b);
+  }
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+  function isLegBottomPixel(x, y, shoeH) {
+    if (shoeH <= 0) return false;
+    const isFootSole = (
+      (x >= 8 && x <= 11 && ((y >= 16 && y <= 19) || (y >= 32 && y <= 35) || (y >= 48 && y <= 51))) ||
+      (x >= 24 && x <= 27 && y >= 48 && y <= 51)
+    );
+    if (isFootSole) return true;
+
+    if (x >= 0 && x <= 15) {
+      if (y >= 32 - shoeH && y <= 31) return true;
+      if (y >= 48 - shoeH && y <= 47) return true;
+      if (y >= 64 - shoeH && y <= 63) return true;
+    }
+    if (x >= 16 && x <= 31 && y >= 64 - shoeH && y <= 63) {
+      return true;
+    }
+    return false;
+  }
+
+  function analyzeSkin(imgData) {
+    const data = imgData.data;
+    pixelClassification = new Array(4096);
+    const shoeH = parseInt(shoeHeightSlider.value, 10);
+
+    const sums = {
+      tunic: { s: 0, l: 0, count: 0 },
+      pants: { s: 0, l: 0, count: 0 },
+      sleeves: { s: 0, l: 0, count: 0 },
+      shoes: { s: 0, l: 0, count: 0 }
+    };
+
+    for (let y = 0; y < 64; y++) {
+      for (let x = 0; x < 64; x++) {
+        const idx = y * 64 + x;
+        const i = idx * 4;
+        const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+        const [h, s, l] = rgbToHsl(r, g, b);
+
+        let group = 'none';
+
+        if (a > 10) {
+          const isHeadArea = (y < 16);
+          const isInChickenBox = (x >= 31 && x <= 40 && y >= 37 && y <= 48);
+          const isChickenPixel = isInChickenBox && !(g > r * 1.04 && g > b * 1.04);
+
+          const isSkinTone = (
+            (r > 200 && g > 125 && b > 95 && (r - g) > 22 && (h >= 8 && h <= 34)) ||
+            (x >= 22 && x <= 25 && y >= 20 && y <= 24 && r > 180 && g > 110)
+          );
+
+          const isBrownCuff = (
+            ((y >= 29 && y <= 31 && x <= 15 && x >= 0 && !(x <= 15 && y >= 20)) ||
+             (y >= 29 && y <= 31 && x >= 40) ||
+             (y >= 61 && y <= 63 && x >= 32)) && l < 42
+          );
+
+          if (!isSkinTone) {
+            if (isLegBottomPixel(x, y, shoeH)) {
+              group = 'shoes';
+            } else if (
+              (r > g * 1.28 && r > b * 1.25 && (h >= 330 || h <= 22)) ||
+              (x >= 20 && x <= 27 && y >= 24 && y <= 30 && r > g * 1.15)
+            ) {
+              group = 'tunic';
+            } else if (g > r * 1.02 && g >= b * 1.02 && h >= 70 && h <= 165) {
+              group = 'pants';
+            } else if (h >= 25 && h <= 68 && s >= 12 && s <= 60 && l >= 25 && l <= 70) {
+              group = 'sleeves';
+            }
+          }
+
+          pixelClassification[idx] = {
+            group, h, s, l,
+            isHeadArea, isChickenPixel, isSkinTone, isBrownCuff
+          };
+
+          if (group !== 'none' && !isHeadArea && !isChickenPixel && !isBrownCuff) {
+            sums[group].s += s;
+            sums[group].l += l;
+            sums[group].count++;
+          }
+        } else {
+          pixelClassification[idx] = { group: 'none', h: 0, s: 0, l: 0 };
+        }
+      }
+    }
+
+    ['tunic', 'pants', 'sleeves', 'shoes'].forEach(g => {
+      if (sums[g].count > 0) {
+        groupStats[g].avgS = sums[g].s / sums[g].count;
+        groupStats[g].avgL = sums[g].l / sums[g].count;
+      }
+    });
+  }
+
+  function renderRecoloredSkin() {
+    if (!originalImageData) return;
+
+    const outData = new ImageData(new Uint8ClampedArray(originalImageData.data), 64, 64);
+    const data = outData.data;
+
+    const targetColors = {
+      tunic: hexToHsl(colTunic.value),
+      pants: hexToHsl(colPants.value),
+      sleeves: hexToHsl(colSleeves.value),
+      shoes: hexToHsl(colShoes.value)
+    };
+
+    const contrastMult = parseFloat(contrastSlider.value) / 100;
+    const satMult = parseFloat(satKeepSlider.value) / 100;
+
+    for (let idx = 0; idx < 4096; idx++) {
+      const info = pixelClassification[idx];
+      if (!info || info.group === 'none') continue;
+
+      if (keepHead.checked && info.isHeadArea) continue;
+      if (keepChicken.checked && info.isChickenPixel) continue;
+      if (keepCuffs.checked && (info.isSkinTone || info.isBrownCuff)) continue;
+
+      const [tH, tS, tL] = targetColors[info.group];
+      const stats = groupStats[info.group];
+
+      const deltaL = info.l - stats.avgL;
+      const deltaS = info.s - stats.avgS;
+
+      const newS = clamp(tS + deltaS * satMult, 0, 100);
+      const newL = clamp(tL + deltaL * contrastMult, 2, 96);
+
+      const [nR, nG, nB] = hslToRgb(tH, newS, newL);
+      const i = idx * 4;
+      data[i] = nR; data[i+1] = nG; data[i+2] = nB;
+    }
+
+    skinCtx.clearRect(0, 0, 64, 64);
+    skinCtx.putImageData(outData, 0, 0);
+    if (skinTexture) skinTexture.needsUpdate = true;
+  }
+
+  function loadSkinFromGitHub() {
+    const rawUrl = 'https://raw.githubusercontent.com/Teknoist/mcskin/03cbb4ec904744b0805998b2ed3a70b31bf49406/skin.png';
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      skinCanvas.width = 64;
+      skinCanvas.height = 64;
+      skinCtx.clearRect(0, 0, 64, 64);
+      skinCtx.drawImage(img, 0, 0, 64, 64);
+      originalImageData = skinCtx.getImageData(0, 0, 64, 64);
+      analyzeSkin(originalImageData);
+      renderRecoloredSkin();
+      document.getElementById('statusText').innerHTML = `✅ GitHub'daki <code>skin.png</code> başarıyla yüklendi.`;
+    };
+    img.onerror = () => {
+      document.getElementById('statusText').innerHTML = `⚠️ GitHub'dan yüklenemedi. CORS engeli için alttan dosya seçebilirsin.`;
+    };
+    img.src = rawUrl;
+  }
+
+  document.querySelectorAll('#animGroup .chip-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#animGroup .chip-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentAnim = btn.dataset.anim;
+    });
+  });
+
+  document.querySelectorAll('[data-layer]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('active');
+      const layer = btn.dataset.layer;
+      const isVis = btn.classList.contains('active');
+      if (layer === 'armsBase') {
+        meshes.rightArmBase.visible = isVis;
+        meshes.leftArmBase.visible = isVis;
+      } else if (layer === 'legsBase') {
+        meshes.rightLegBase.visible = isVis;
+        meshes.leftLegBase.visible = isVis;
+      } else if (meshes[layer]) {
+        meshes[layer].visible = isVis;
+      }
+    });
+  });
+
+  document.getElementById('explodeSlider').addEventListener('input', e => {
+    const val = parseFloat(e.target.value);
+    document.getElementById('explodeVal').textContent = `${val}%`;
+    const scale = 1 + (val / 100) * 0.35;
+    ['hat', 'jacket', 'rightSleeve', 'leftSleeve', 'rightPant', 'leftPant'].forEach(k => {
+      if (meshes[k]) meshes[k].scale.set(scale, scale, scale);
+    });
+  });
+
+  function setManualPose() {
+    currentAnim = 'none';
+    document.querySelectorAll('#animGroup .chip-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.anim === 'none');
+    });
+    const hDeg = parseFloat(document.getElementById('poseHead').value);
+    const aDeg = parseFloat(document.getElementById('poseArms').value);
+    const lDeg = parseFloat(document.getElementById('poseLegs').value);
+
+    document.getElementById('poseHeadVal').textContent = `${hDeg}°`;
+    document.getElementById('poseArmsVal').textContent = `${aDeg}°`;
+    document.getElementById('poseLegsVal').textContent = `${lDeg}°`;
+
+    headGroup.rotation.y = THREE.MathUtils.degToRad(hDeg);
+    rightArmGroup.rotation.x = THREE.MathUtils.degToRad(aDeg);
+    leftArmGroup.rotation.x = THREE.MathUtils.degToRad(-aDeg);
+    rightLegGroup.rotation.x = THREE.MathUtils.degToRad(lDeg);
+    leftLegGroup.rotation.x = THREE.MathUtils.degToRad(-lDeg);
+  }
+
+  ['poseHead', 'poseArms', 'poseLegs'].forEach(id => {
+    document.getElementById(id).addEventListener('input', setManualPose);
+  });
+
+  document.getElementById('speedSlider').addEventListener('input', e => {
+    document.getElementById('speedVal').textContent = `${e.target.value}%`;
+  });
+
+  shoeHeightSlider.addEventListener('input', () => {
+    document.getElementById('shoeHeightVal').textContent = `${shoeHeightSlider.value} Piksel`;
+    if (originalImageData) {
+      analyzeSkin(originalImageData);
+      renderRecoloredSkin();
+    }
+  });
+  contrastSlider.addEventListener('input', () => {
+    document.getElementById('contrastVal').textContent = `${contrastSlider.value}%`;
+    renderRecoloredSkin();
+  });
+  satKeepSlider.addEventListener('input', () => {
+    document.getElementById('satKeepVal').textContent = `${satKeepSlider.value}%`;
+    renderRecoloredSkin();
+  });
+  [keepHead, keepChicken, keepCuffs].forEach(cb => cb.addEventListener('change', renderRecoloredSkin));
+
+  [
+    [colTunic, hexTunic],
+    [colPants, hexPants],
+    [colSleeves, hexSleeves],
+    [colShoes, hexShoes]
+  ].forEach(([picker, hex]) => {
+    picker.addEventListener('input', () => {
+      hex.value = picker.value.toUpperCase();
+      renderRecoloredSkin();
+    });
+    hex.addEventListener('input', () => {
+      if (/^#[0-9A-Fa-f]{6}$/.test(hex.value)) {
+        picker.value = hex.value;
+        renderRecoloredSkin();
+      }
+    });
+  });
+
+  function applyPalette(p, btnEl = null) {
+    colTunic.value = p.tunic; hexTunic.value = p.tunic.toUpperCase();
+    colPants.value = p.pants; hexPants.value = p.pants.toUpperCase();
+    colSleeves.value = p.sleeves; hexSleeves.value = p.sleeves.toUpperCase();
+    colShoes.value = p.shoes || p.pants; hexShoes.value = (p.shoes || p.pants).toUpperCase();
+
+    document.querySelectorAll('.palette-btn').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+    renderRecoloredSkin();
+  }
+
+  function createPaletteCard(p, isCustom = false, idx = -1) {
+    const div = document.createElement('div');
+    div.className = 'palette-btn';
+    div.innerHTML = `
+      <span class="palette-name">${p.name}</span>
+      <div class="swatches">
+        <div class="swatch" style="background:${p.tunic}" title="Üst"></div>
+        <div class="swatch" style="background:${p.pants}" title="Pantolon"></div>
+        <div class="swatch" style="background:${p.sleeves}" title="Kollar"></div>
+        <div class="swatch" style="background:${p.shoes || p.pants}" title="Ayakkabı"></div>
+      </div>
+    `;
+    div.addEventListener('click', e => {
+      if (e.target.classList.contains('del-palette')) return;
+      applyPalette(p, div);
+    });
+    if (isCustom) {
+      const del = document.createElement('button');
+      del.className = 'del-palette';
+      del.textContent = '✕';
+      del.addEventListener('click', () => {
+        const list = JSON.parse(localStorage.getItem('mc_custom_palettes_v3') || '[]');
+        list.splice(idx, 1);
+        localStorage.setItem('mc_custom_palettes_v3', JSON.stringify(list));
+        renderPalettes();
+      });
+      div.appendChild(del);
+    }
+    return div;
+  }
+
+  function renderPalettes() {
+    const presetGrid = document.getElementById('presetGrid');
+    presetGrid.innerHTML = '';
+    PRESET_PALETTES.forEach((p, i) => {
+      const card = createPaletteCard(p, false);
+      if (i === 0) card.classList.add('active');
+      presetGrid.appendChild(card);
+    });
+
+    const customGrid = document.getElementById('customGrid');
+    customGrid.innerHTML = '';
+    const customList = JSON.parse(localStorage.getItem('mc_custom_palettes_v3') || '[]');
+    if (customList.length === 0) {
+      customGrid.innerHTML = `<div style="font-size:0.75rem; color:var(--muted);">Henüz özel palet yok.</div>`;
+    } else {
+      customList.forEach((p, i) => customGrid.appendChild(createPaletteCard(p, true, i)));
+    }
+  }
+
+  document.getElementById('savePaletteBtn').addEventListener('click', () => {
+    const input = document.getElementById('customPaletteName');
+    const list = JSON.parse(localStorage.getItem('mc_custom_palettes_v3') || '[]');
+    list.push({
+      name: input.value.trim() || `Özel Palet #${list.length + 1}`,
+      tunic: colTunic.value,
+      pants: colPants.value,
+      sleeves: colSleeves.value,
+      shoes: colShoes.value
+    });
+    localStorage.setItem('mc_custom_palettes_v3', JSON.stringify(list));
+    input.value = '';
+    renderPalettes();
+  });
+
+  document.getElementById('fileInput').addEventListener('change', e => {
+    if (e.target.files[0]) {
+      const img = new Image();
+      img.onload = () => {
+        skinCanvas.width = 64;
+        skinCanvas.height = 64;
+        skinCtx.clearRect(0, 0, 64, 64);
+        skinCtx.drawImage(img, 0, 0, 64, 64);
+        originalImageData = skinCtx.getImageData(0, 0, 64, 64);
+        analyzeSkin(originalImageData);
+        renderRecoloredSkin();
+        document.getElementById('statusText').innerHTML = `✅ Yerel skin dosyası yüklendi.`;
+      };
+      img.src = URL.createObjectURL(e.target.files[0]);
+    }
+  });
+
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.download = `skin_${hexTunic.value.replace('#','')}.png`;
+    a.href = skinCanvas.toDataURL('image/png');
+    a.click();
+  });
+
+  init3DViewer();
+  renderPalettes();
+  loadSkinFromGitHub();
+</script>
+</body>
+</html>
