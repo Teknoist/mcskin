@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MC Skin 3D Palette Studio</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --panel: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #3b82f6;
+      --success: #10b981;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 18px;
+    }
+    .layout {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 420px 340px 1fr;
+      gap: 18px;
+    }
+    @media (max-width: 1150px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+    }
+    h1 { font-size: 1.2rem; margin-bottom: 4px; }
+    h2 {
+      font-size: 0.95rem;
+      margin: 14px 0 8px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--border);
+      color: #e2e8f0;
+    }
+    .sub { font-size: 0.78rem; color: var(--muted); margin-bottom: 10px; }
+
+    /* 3D Sahne */
+    #viewer3d {
+      width: 100%;
+      height: 360px;
+      background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      cursor: grab;
+    }
+    #viewer3d:active { cursor: grabbing; }
+    .viewer-badge {
+      position: absolute;
+      top: 8px; left: 8px;
+      background: rgba(15, 23, 42, 0.75);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      pointer-events: none;
+    }
+    .tex-preview-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px;
+      background: rgba(15, 23, 42, 0.5);
+      padding: 8px 10px;
+      border-radius: 8px;
+    }
+    #skinCanvas {
+      width: 64px; height: 64px;
+      image-rendering: pixelated;
+      background: repeating-conic-gradient(#334155 0% 25%, #0f172a 0% 50%) 50% / 8px 8px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+
+    /* Katman ve Animasyon Butonları */
+    .btn-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .chip-btn {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      cursor: pointer;
+      transition: 0.15s;
+      text-align: center;
+    }
+    .chip-btn.active {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Renk Seçiciler */
+    .color-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 23, 42, 0.55);
+      padding: 7px 10px;
+      border-radius: 8px;
+      margin-bottom: 7px;
+    }
+    .color-row label { font-size: 0.82rem; font-weight: 500; }
+    .color-inputs { display: flex; align-items: center; gap: 6px; }
+    input[type="color"] {
+      -webkit-appearance: none;
+      border: none;
+      width: 30px; height: 30px;
+      border-radius: 6px;
+      cursor: pointer;
+      background: none;
+    }
+    input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    input[type="color"]::-webkit-color-swatch { border: 1px solid #64748b; border-radius: 6px; }
+    .hex-input {
+      width: 72px;
+      background: #0f172a;
+      border: 1px solid #475569;
+      color: #fff;
+      padding: 5px 6px;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+
+    /* Sliderlar */
+    .slider-row { margin-bottom: 9px; }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.76rem;
+      margin-bottom: 3px;
+      color: #cbd5e1;
+    }
+    input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+
+    .checks { display: flex; flex-direction: column; gap: 5px; font-size: 0.8rem; color: #cbd5e1; }
+    .checks label { display: flex; align-items: center; gap: 7px; cursor: pointer; }
+
+    /* Palet Izgarası */
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+      gap: 8px;
+      max-height: 330px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .palette-btn {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+      position: relative;
+      transition: 0.15s;
+    }
+    .palette-btn:hover, .palette-btn.active {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .palette-name { font-size: 0.78rem; font-weight: 600; margin-bottom: 5px; display: block; }
+    .swatches { display: flex; height: 15px; border-radius: 4px; overflow: hidden; }
+    .swatch { flex: 1; }
+    .del-palette {
+      position: absolute; top: 4px; right: 4px;
+      background: rgba(239,68,68,0.2); color: #f87171;
+      border: none; border-radius: 4px; padding: 0 5px;
+      font-size: 0.7rem; cursor: pointer;
+    }
+
+    .btn-download {
+      background: var(--success);
+      color: #052e16;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      width: 100%;
+    }
+    .btn-download:hover { filter: brightness(1.1); }
+    .custom-save-bar { display: flex; gap: 6px; margin-top: 8px; }
+    .custom-save-bar input {
+      flex: 1; background: #0f172a; border: 1px solid #475569;
+      color: #fff; padding: 7px 10px; border-radius: 6px; font-size: 0.8rem;
+    }
+    .custom-save-bar button {
+      background: var(--accent); color: #fff; border: none;
+      padding: 7px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- 1. SÜTUN: 3D GÖRÜNTÜLEYİCİ & HAREKET / KATMAN KONTROLLERİ -->
+  <div class="card">
+    <h1>3D Karakter & Katman Stüdyosu</h1>
+    <p class="sub" id="statusText">Projedeki <code>skin.png</code> otomatik yüklendi.</p>
+
+    <div id="viewer3d">
+      <div class="viewer-badge">Sol Tık: Döndür | Tekerlek: Yakınlaştır</div>
+    </div>
+
+    <div class="tex-preview-bar">
+      <canvas id="skinCanvas" width="64" height="64"></canvas>
+      <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+        <button class="btn-download" id="downloadBtn">⬇ 64x64 Şeffaf PNG İndir</button>
+        <label style="font-size:0.72rem
