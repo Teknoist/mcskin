@@ -1,0 +1,24 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary scratch & verification scripts
+apply_fixes.py
+fix_cape_uv.py
+run_checks.py
+verify_all.js
+verify_index.js
+count_palettes.py
+test_extractor.py
+update_build_script.py
+make_v5.py
+make_ultimate_studio.py
+build_clean_singlepage_studio.py
+generate_final.py
+
+# Historical reference files
+git_643ca79_index.html
+original_inden.html
+skinview3d_animation.ts
+skinview3d_model.ts
